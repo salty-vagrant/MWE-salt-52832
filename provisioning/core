@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# vi :set ft=bash:
+
+set -Eeuo pipefail
+
+readonly __DIR__="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+export DEBIAN_FRONTEND=noninteractive
+
+SALT_VERSION="${SALT_VERSION:-3002.5}"
+
+
+cleanup () {
+  rm -rf /tmp/provisioning
+}
+
+trap cleanup INT ERR EXIT
+
+
+
+install_salt_data () {
+  echo '*****************************************'
+  echo '*****************************************'
+  echo 'Installing Salt Data'
+  echo '*****************************************'
+  echo '*****************************************'
+  mkdir -p /srv
+  cp -r "${__DIR__}/files/srv"/* /srv
+}
+
+install_salt_minion () {
+  echo '*****************************************'
+  echo '*****************************************'
+  echo 'Installing Salt from Bootstrap Script'
+  echo '*****************************************'
+  echo '*****************************************'
+  curl -L https://bootstrap.saltproject.io | sh -s -- -X stable "${SALT_VERSION}"
+}
+
+
+configure_minion () {
+  echo '*****************************************'
+  echo '*****************************************'
+  echo 'Installing Salt Configuration'
+  echo '*****************************************'
+  echo '*****************************************'
+  cp "${__DIR__}/files/minion" /etc/salt/minion 
+}
+
+start_minion () {
+  echo '*****************************************'
+  echo '*****************************************'
+  echo 'Start Salt Minion'
+  echo '*****************************************'
+  echo '*****************************************'
+  systemctl start salt-minion
+}
+
+
+install_salt_data
+install_salt_minion
+configure_minion
+start_minion
+
+
+exit 0

@@ -1,0 +1,28 @@
+pillarenv: base
+master_type: disable
+file_client: local
+
+file_roots:
+  personal:
+    - /srv/salt/personal
+  project:
+    - /srv/salt/project
+  base:
+    - /srv/salt/base
+
+pillar_roots:
+  base:
+    - /srv/pillar/base
+  project:
+    - /srv/pillar/project
+  personal:
+    - /srv/pillar/personal
+
+
+env_order:
+  - base
+  - project
+  - personal
+
+ext_pillar:
+  - stack: /srv/stack/core.cfg
